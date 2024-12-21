@@ -1,0 +1,12 @@
+cmdbox
+langchain_community
+langchain_openai
+langchain_postgres
+langchain_unstructured
+psycopg[binary]
+requests
+sphinx
+sphinx-rtd-theme
+sphinx_fontawesome
+sphinx-intl
+sphinx-sitemap
