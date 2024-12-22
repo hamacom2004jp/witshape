@@ -63,6 +63,9 @@ class PgvectorEmbedd(feature.Feature):
                 dict(opt="llmprojectid", type="str", default=None, required=False, multi=False, hide=False, choise=None,
                      discription_ja="llmのプロバイダ接続のためのプロジェクトIDを指定します。",
                      discription_en="Specify the project ID for llm's provider connection."),
+                dict(opt="llmsvaccountfile", type="file", default=None, required=False, multi=False, hide=False, choise=None,
+                     discription_ja="llmのプロバイダ接続のためのサービスアカウントファイルを指定します。",
+                     discription_en="Specifies the service account file for llm's provider connection."),
                 dict(opt="llmlocation", type="str", default=None, required=False, multi=False, hide=False, choise=None,
                      discription_ja="llmのプロバイダ接続のためのロケーションを指定します。",
                      discription_en="Specify the project ID for llm's provider connection."),
@@ -120,11 +123,17 @@ class PgvectorEmbedd(feature.Feature):
                 embeddings = AzureOpenAIEmbeddings(model=args.llmmodel, endpoint=args.llmendpoint, apikey=args.llmapikey)
             elif args.llmprov == 'vertexai':
                 if args.llmmodel is None: raise ValueError("llmmodel is required.")
-                #if args.llmapikey is None: raise ValueError("llmapikey is required.")
+                if args.llmsvaccountfile is None: raise ValueError("llmsvaccountfile is required.")
                 if args.llmprojectid is None: raise ValueError("llmprojectid is required.")
                 if args.llmlocation is None: raise ValueError("llmlocation is required.")
+                from google.oauth2 import service_account
+                credentials = service_account.Credentials.from_service_account_file(args.llmsvaccountfile)
+                scoped_credentials = credentials.with_scopes([
+                    'https://www.googleapis.com/auth/cloud-platform',
+                    'https://www.googleapis.com/auth/aiplatform.full'
+                ])
                 from langchain_google_vertexai import VertexAIEmbeddings
-                embeddings = VertexAIEmbeddings(model=args.llmmodel, project_id=args.llmprojectid, location=args.llmlocation)
+                embeddings = VertexAIEmbeddings(model=args.llmmodel, project_id=args.llmprojectid, location=args.llmlocation, credentials=scoped_credentials)
             else:
                 raise ValueError("llmprov is invalid.")
             if args.loadprov == 'local':

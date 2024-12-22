@@ -21,6 +21,7 @@ INSTALL_REQUIRES = [
     'langchain_openai',
     'langchain_postgres',
     'langchain_unstructured',
+    'google-auth',
     'psycopg[binary]',
     'requests'
 ]

@@ -35,10 +35,14 @@
             "justMyCode": false
         },
         {
-            "name": "Python: extknow install",
+            "name": "Python: extknow embedd",
             "type": "python",
             "request": "launch",
-            "args": ["-m","pgvector","-c","install","--debug"],
+            "args": ["-m","pgvector","-c","embedd","--servicename","servicename",
+                    "--llmprov","vertexai","--llmprojectid","inspectionbox-hama","--llmlocation","asia-northeast1",
+                    "--llmsvaccountfile","inspectionbox-hama-4d7b588f29ab.json","--llmmodel","text-multilingual-embedding-002",
+                    "--loadprov","local","--loadpath","./pgvectordb","--loadgrep","*",
+                    "--dbhost","localhost","--dbport","15432","--dbname","extknow","--dbuser","postgres","--dbpass","postgres","--dbtimeout","30","--debug"],
             "module": "extknow",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
