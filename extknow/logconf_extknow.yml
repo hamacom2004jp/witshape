@@ -20,6 +20,10 @@ handlers:
         filename: .logs/extknow.log
 
 loggers:
+    extknow:
+        handlers: [extknow, std]
+        level: INFO
+        qualname: extknow
     client:
         handlers: [extknow, std]
         level: INFO

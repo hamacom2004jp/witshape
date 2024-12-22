@@ -47,6 +47,14 @@ cmdrule:
       mode: client
       cmds: [file_copy, file_mkdir, file_move, file_remove, file_rmdir, file_upload]
       rule: allow
+    - groups: [user]
+      mode: pgvector
+      cmds: [search]
+      rule: allow
+    - groups: [editor]
+      mode: pgvector
+      cmds: [embedd]
+      rule: allow
 pathrule:
   policy: deny # allow, deny
   rules:

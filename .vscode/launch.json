@@ -25,10 +25,20 @@
             "justMyCode": false
         },
         {
-            "name": "Python: extknow gui",
+            "name": "Python: extknow web",
             "type": "python",
             "request": "launch",
-            "args": ["-m","gui","-c","start","--signin_file",".extknows/user_list.yml","--debug"],
+            "args": ["-m","web","-c","start","--signin_file",".samples/user_list.yml","--debug"],
+            "module": "extknow",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: extknow install",
+            "type": "python",
+            "request": "launch",
+            "args": ["-m","pgvector","-c","install","--debug"],
             "module": "extknow",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",

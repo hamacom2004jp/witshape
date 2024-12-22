@@ -17,6 +17,7 @@ PYTHON_REQUIRES = '>=3.10'
 INSTALL_REQUIRES = [
     'cmdbox',
     'langchain_community',
+    'langchain-google-vertexai',
     'langchain_openai',
     'langchain_postgres',
     'langchain_unstructured',

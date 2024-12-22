@@ -39,7 +39,7 @@ class ServiceDelete(feature.Feature):
                 dict(opt="dbhost", type="str", default="localhost", required=True, multi=False, hide=True, choise=None,
                         discription_ja="接続するデータベースホスト名を指定します。",
                         discription_en="Specify the database host name to connect to."),
-                dict(opt="dbport", type="int", default=5432, required=True, multi=False, hide=True, choise=None,
+                dict(opt="dbport", type="int", default=15432, required=True, multi=False, hide=True, choise=None,
                         discription_ja="接続するデータベースポートを指定します。",
                         discription_en="Specify the database port to connect to."),
                 dict(opt="dbname", type="str", default="extknow", required=True, multi=False, hide=True, choise=None,

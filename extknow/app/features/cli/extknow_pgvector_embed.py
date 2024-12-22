@@ -33,13 +33,13 @@ class PgvectorEmbedd(feature.Feature):
         """
         return dict(
             type="str", default=None, required=False, multi=False, hide=False, use_redis=self.USE_REDIS_FALSE,
-            discription_ja="サービスを削除します。",
-            discription_en="Delete the service.",
+            discription_ja="データを読込み特徴値をデータベースに登録します。",
+            discription_en="Reads data and registers embedded values in the database.",
             choise=[
                 dict(opt="dbhost", type="str", default="localhost", required=True, multi=False, hide=True, choise=None,
                      discription_ja="接続するデータベースホスト名を指定します。",
                      discription_en="Specify the database host name to connect to."),
-                dict(opt="dbport", type="int", default=5432, required=True, multi=False, hide=True, choise=None,
+                dict(opt="dbport", type="int", default=15432, required=True, multi=False, hide=True, choise=None,
                      discription_ja="接続するデータベースポートを指定します。",
                      discription_en="Specify the database port to connect to."),
                 dict(opt="dbname", type="str", default="extknow", required=True, multi=False, hide=True, choise=None,
@@ -57,9 +57,15 @@ class PgvectorEmbedd(feature.Feature):
                 dict(opt="servicename", type="str", default=None, required=False, multi=False, hide=False, choise=None,
                      discription_ja="サービス名を指定します。",
                      discription_en="Specify the service name."),
-                dict(opt="llmprov", type="str", default="azureopenai", required=False, multi=False, hide=False, choise=["azureopenai", "openai"],
+                dict(opt="llmprov", type="str", default="azureopenai", required=False, multi=False, hide=False, choise=["azureopenai", "openai", "vertexai"],
                      discription_ja="llmのプロバイダを指定します。",
                      discription_en="Specify llm provider."),
+                dict(opt="llmprojectid", type="str", default=None, required=False, multi=False, hide=False, choise=None,
+                     discription_ja="llmのプロバイダ接続のためのプロジェクトIDを指定します。",
+                     discription_en="Specify the project ID for llm's provider connection."),
+                dict(opt="llmlocation", type="str", default=None, required=False, multi=False, hide=False, choise=None,
+                     discription_ja="llmのプロバイダ接続のためのロケーションを指定します。",
+                     discription_en="Specify the project ID for llm's provider connection."),
                 dict(opt="llmapikey", type="str", default=None, required=False, multi=False, hide=False, choise=None,
                      discription_ja="llmのプロバイダ接続のためのAPIキーを指定します。",
                      discription_en="Specify API key for llm provider connection."),
@@ -72,10 +78,10 @@ class PgvectorEmbedd(feature.Feature):
                 dict(opt="loadprov", type="str", default="azureopenai", required=False, multi=False, hide=False, choise=["local"],
                      discription_ja="読込みプロバイダを指定します。",
                      discription_en="Specifies the load provider."),
-                dict(opt="loadpath", type="str", default=".", required=False, multi=False, hide=False, choise=None,
+                dict(opt="loadpath", type="dir", default=".", required=False, multi=False, hide=False, choise=None,
                      discription_ja="読込みパスを指定します。",
                      discription_en="Specifies the load path."),
-                dict(opt="loadgrep", type="str", default=".", required=False, multi=False, hide=False, choise=None,
+                dict(opt="loadgrep", type="str", default="*", required=False, multi=False, hide=False, choise=None,
                      discription_ja="読込みgrepパターンを指定します。",
                      discription_en="Specifies a load grep pattern."),
             ])
@@ -104,16 +110,21 @@ class PgvectorEmbedd(feature.Feature):
             if args.llmprov == 'openai':
                 if args.llmmodel is None: raise ValueError("llmmodel is required.")
                 if args.llmapikey is None: raise ValueError("llmapikey is required.")
-                if args.servicename is None: raise ValueError("servicename is required.")
                 from langchain_openai import OpenAIEmbeddings
                 embeddings = OpenAIEmbeddings(model=args.llmmodel, apikey=args.llmapikey)
             elif args.llmprov == 'azureopenai':
                 if args.llmmodel is None: raise ValueError("llmmodel is required.")
                 if args.llmendpoint is None: raise ValueError("llmendpoint is required.")
                 if args.llmapikey is None: raise ValueError("llmapikey is required.")
-                if args.servicename is None: raise ValueError("servicename is required.")
                 from langchain_openai import AzureOpenAIEmbeddings
                 embeddings = AzureOpenAIEmbeddings(model=args.llmmodel, endpoint=args.llmendpoint, apikey=args.llmapikey)
+            elif args.llmprov == 'vertexai':
+                if args.llmmodel is None: raise ValueError("llmmodel is required.")
+                #if args.llmapikey is None: raise ValueError("llmapikey is required.")
+                if args.llmprojectid is None: raise ValueError("llmprojectid is required.")
+                if args.llmlocation is None: raise ValueError("llmlocation is required.")
+                from langchain_google_vertexai import VertexAIEmbeddings
+                embeddings = VertexAIEmbeddings(model=args.llmmodel, project_id=args.llmprojectid, location=args.llmlocation)
             else:
                 raise ValueError("llmprov is invalid.")
             if args.loadprov == 'local':
