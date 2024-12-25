@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'extknow'
+project = 'witshape'
 copyright = '2024, Author'
 author = 'Author'
 

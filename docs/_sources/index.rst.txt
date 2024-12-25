@@ -1,7 +1,7 @@
 .. -*- coding: utf-8 -*-
 
 #######################################
-extknow
+witshape
 #######################################
 
 - This is an implementation for using an arbitrary file system as an external knowledge of Dify.

@@ -1,15 +1,15 @@
-# extknow
+# witshape
 
 - This is an implementation for using an arbitrary file system as an external knowledge of [Dify](https://dify.ai/).
-- Documentation is [here](https://hamacom2004jp.github.io/extknow/).
+- Documentation is [here](https://hamacom2004jp.github.io/witshape/).
 
 # Install
 
 - Install cmdbox with the following command.
 
 ```bash
-pip install extknow
-extknow -v
+pip install witshape
+witshape -v
 ```
 
 # Lisence

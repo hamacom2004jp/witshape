@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 dt_now = datetime.datetime.now()
-project = f'extknow'
+project = f'witshape'
 copyright = f'Copyright (c) 2023-{dt_now.strftime("%Y")} hamacom2004jp All Rights Reserved.'
 author = 'hamacom2004jp'
 release = dt_now.strftime("%Y/%m/%d")

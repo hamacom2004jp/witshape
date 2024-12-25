@@ -1,9 +1,9 @@
-.. extknow documentation master file, created by
+.. witshape documentation master file, created by
    sphinx-quickstart on Sun Dec 22 00:03:01 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-extknow documentation
+witshape documentation
 =====================
 
 Add your content using ``reStructuredText`` syntax. See the
@@ -15,4 +15,4 @@ documentation for details.
    :maxdepth: 4
    :caption: Contents:
 
-   extknow
+   witshape

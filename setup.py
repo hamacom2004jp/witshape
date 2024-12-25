@@ -1,12 +1,12 @@
-from extknow import version
+from witshape import version
 from pathlib import Path
 from setuptools import setup
 from setuptools.command.install import install
 import platform
 
 
-DESCRIPTION = 'extknow: This is an implementation for using an arbitrary file system as an external knowledge of Dify.'
-NAME = 'extknow'
+DESCRIPTION = 'witshape: This is an implementation for using an arbitrary file system as an external knowledge of Dify.'
+NAME = 'witshape'
 AUTHOR = 'hamacom2004jp'
 AUTHOR_EMAIL = 'hamacom2004jp@gmail.com'
 URL = version.__srcurl__
@@ -26,12 +26,12 @@ INSTALL_REQUIRES = [
     'unstructured'
 ]
 PACKAGES = [
-    'extknow',
-    'extknow.app',
-    #'extknow.app.commons',
-    'extknow.app.features.cli',
-    'extknow.app.features.web',
-    'extknow.extensions'
+    'witshape',
+    'witshape.app',
+    #'witshape.app.commons',
+    'witshape.app.features.cli',
+    'witshape.app.features.web',
+    'witshape.extensions'
 ]
 KEYWORDS = 'cli restapi redis fastapi'
 CLASSIFIERS=[
@@ -48,9 +48,9 @@ with open('README.md', 'r', encoding='utf-8') as fp:
     readme = fp.read()
 LONG_DESCRIPTION = readme
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
-RESORCE_TEXT_FILES = dict(extknow=['*.yml', 'extensions/**', 'extensions/sample_project/.vscode/**',
+RESORCE_TEXT_FILES = dict(witshape=['*.yml', 'extensions/**', 'extensions/sample_project/.vscode/**',
                                   'docker/**', 'licenses/*', 'tools/datas/**', 'web/**'])
-EXCLUDE_RESORCE_TEXT_FILES =dict(extknow=['extensions/data/*.json', 'extensions/data/*/*.jpg', 'extensions/data/*/*.svg'])
+EXCLUDE_RESORCE_TEXT_FILES =dict(witshape=['extensions/data/*.json', 'extensions/data/*/*.jpg', 'extensions/data/*/*.svg'])
 class CustomInstallCommand(install):
     def run(self):
         super().run()
@@ -59,7 +59,7 @@ class CustomInstallCommand(install):
         bashrc = Path.home() / '.bashrc'
         if not bashrc.exists():
             return
-        CMD = 'eval "$(register-python-argcomplete extknow)"'
+        CMD = 'eval "$(register-python-argcomplete witshape)"'
         with open(bashrc, 'r') as fp:
             for line in fp:
                 if line == CMD:
@@ -88,6 +88,6 @@ setup(
     package_data=RESORCE_TEXT_FILES,
     include_package_data=True,
     exclude_package_data=EXCLUDE_RESORCE_TEXT_FILES,
-    entry_points=dict(console_scripts=['extknow=extknow.app.app:main']),
+    entry_points=dict(console_scripts=['witshape=witshape.app.app:main']),
     cmdclass={'install': CustomInstallCommand},
 )

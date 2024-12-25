@@ -4,12 +4,12 @@
 Install
 **************
 
-- Install extknow with the following command.
+- Install witshape with the following command.
 
 .. code-block:: bash
 
-    pip install extknow
-    extknow -v
+    pip install witshape
+    witshape -v
 
 - Also install the docker version of the redis server.
 

@@ -1,0 +1,46 @@
+version: 1
+
+formatters:
+    fmt:
+        format: '%(levelname)s[%(asctime)s] - %(message)s'
+        class: logging.Formatter
+handlers:
+    std:
+        class: cmdbox.app.commons.loghandler.ColorfulStreamHandler
+        level: INFO
+        formatter: fmt
+        stream: ext://sys.stdout
+    witshape:
+        class: cmdbox.app.commons.loghandler.TimedRotatingFileHandler
+        level: INFO
+        formatter: fmt
+        backupCount: 5
+        when : 'D'
+        encoding : 'utf-8'
+        filename: .logs/witshape.log
+
+loggers:
+    witshape:
+        handlers: [witshape, std]
+        level: INFO
+        qualname: witshape
+    client:
+        handlers: [witshape, std]
+        level: INFO
+        qualname: client
+    gui:
+        handlers: [witshape, std]
+        level: INFO
+        qualname: gui
+    server:
+        handlers: [witshape, std]
+        level: INFO
+        qualname: server
+    web:
+        handlers: [witshape, std]
+        level: INFO
+        qualname: web
+ 
+#root:
+#    handlers: [witshape, std]
+#    level: NOTSET

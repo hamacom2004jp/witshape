@@ -1,0 +1,21 @@
+witshape package
+================
+
+Submodules
+----------
+
+witshape.version module
+-----------------------
+
+.. automodule:: witshape.version
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: witshape
+   :members:
+   :undoc-members:
+   :show-inheritance:

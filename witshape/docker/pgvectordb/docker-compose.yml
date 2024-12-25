@@ -1,0 +1,21 @@
+version: "3.3"
+
+services:
+  pgvectordb:
+    build: .
+    container_name: pgvectordb
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD-postgres}
+      - POSTGRES_USER=${POSTGRES_USER-postgres}
+      - POSTGRES_DB=${POSTGRES_DB-postgres}
+      - POSTGRES_HOST_AUTH_METHOD=${POSTGRES_HOST_AUTH_METHOD-trust}
+      - PGDATA=${PGDATA-/var/lib/postgresql/data}
+    image: witshape/ankane/pgvector:latest
+    ports:
+      - ${PGVECTORDB_PORT-15432}:5432
+    restart: on-failure
+    tty: true
+    volumes:
+      - /home/ubuntu/pgvectordb:/home/ubuntu/pgvectordb
+      - /home/ubuntu/pgvectordb/data:/var/lib/postgresql/data
+    working_dir: /home/ubuntu/pgvectordb

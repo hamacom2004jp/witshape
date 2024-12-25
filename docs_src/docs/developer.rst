@@ -4,7 +4,7 @@
 Developer Information
 ********************************
 
-This section describes the steps to build a development environment for extknow.
+This section describes the steps to build a development environment for witshape.
 
 How to install the project
 ==============================
@@ -15,13 +15,13 @@ To install the project, follow these steps:
 
     .. code-block:: bash
 
-        git clone https://github.com/hamacom2004jp/extknow.git
+        git clone https://github.com/hamacom2004jp/witshape.git
 
 2. Go to the project directory:
 
     .. code-block:: bash
 
-        cd extknow
+        cd witshape
 
 3. Create a virtual environment for your project:
 
@@ -41,9 +41,9 @@ To install the project, follow these steps:
 
     .. code-block:: bash
 
-        sphinx-apidoc -F -o docs_src/resources extknow
+        sphinx-apidoc -F -o docs_src/resources witshape
         sphinx-build -b html docs_src docs
-        python -m collectlicense --out extknow/licenses --clear
+        python -m collectlicense --out witshape/licenses --clear
         python setup.py sdist
         python setup.py bdist_wheel
 

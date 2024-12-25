@@ -1,13 +1,13 @@
-extknow package
+witshape package
 ===============
 
 Submodules
 ----------
 
-extknow.version module
+witshape.version module
 ----------------------
 
-.. automodule:: extknow.version
+.. automodule:: witshape.version
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ extknow.version module
 Module contents
 ---------------
 
-.. automodule:: extknow
+.. automodule:: witshape
    :members:
    :undoc-members:
    :show-inheritance:
