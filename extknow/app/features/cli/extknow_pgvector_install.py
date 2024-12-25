@@ -58,7 +58,7 @@ class PgvectorInstall(feature.Feature):
             dist_path = Path('pgvectordb')
             src_path = Path(version.__file__).parent / 'docker' / 'pgvectordb'
             shutil.copytree(src_path, dist_path, dirs_exist_ok=True)
-            returncode, output, cmd = common.cmd(f"docker compose -f {dist_path}/docker-compose.yml build", logger, slise=-1)
+            returncode, output, cmd = common.cmd(f"docker compose -f {dist_path}/docker-compose.yml build pgvectordb", logger, slise=-1)
             if returncode != 0:
                 ret = dict(error=dict(cmd=cmd, msg=f"install error: {output}"))
                 logger.error(f"install error: {output}, cmd: {cmd}")

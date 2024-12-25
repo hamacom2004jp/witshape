@@ -1,0 +1,12 @@
+version: "3.3"
+
+services:
+  unstructured:
+    build: .
+    container_name: unstructured
+    image: extknow/downloads.unstructured.io/unstructured-io/unstructured:latest
+    tty: true
+    volumes:
+      - /home/ubuntu/unstructured:/home/ubuntu/unstructured
+      - /home/ubuntu/unstructured/data:/var/lib/postgresql/data
+    working_dir: /home/ubuntu/unstructured

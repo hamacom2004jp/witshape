@@ -41,7 +41,7 @@
             "args": ["-m","pgvector","-c","embedd","--servicename","servicename",
                     "--llmprov","vertexai","--llmprojectid","inspectionbox-hama","--llmlocation","asia-northeast1",
                     "--llmsvaccountfile","inspectionbox-hama-4d7b588f29ab.json","--llmmodel","text-multilingual-embedding-002",
-                    "--loadprov","local","--loadpath","./pgvectordb","--loadgrep","*",
+                    "--loadprov","local","--loadpath","./","--loadgrep","*",
                     "--dbhost","localhost","--dbport","15432","--dbname","extknow","--dbuser","postgres","--dbpass","postgres","--dbtimeout","30","--debug"],
             "module": "extknow",
             "console": "integratedTerminal",

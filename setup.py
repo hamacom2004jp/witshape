@@ -16,14 +16,14 @@ VERSION = version.__version__
 PYTHON_REQUIRES = '>=3.10'
 INSTALL_REQUIRES = [
     'cmdbox',
+    'chardet',
     'langchain_community',
     'langchain-google-vertexai',
     'langchain_openai',
     'langchain_postgres',
-    'langchain_unstructured',
-    'google-auth',
     'psycopg[binary]',
-    'requests'
+    'requests',
+    'unstructured'
 ]
 PACKAGES = [
     'extknow',

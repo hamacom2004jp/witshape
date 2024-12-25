@@ -1,10 +1,10 @@
 cmdbox
+chardet
+jq
 langchain_community
 langchain-google-vertexai
 langchain_openai
 langchain_postgres
-langchain_unstructured
-google-auth
 psycopg[binary]
 requests
 sphinx
@@ -12,3 +12,4 @@ sphinx-rtd-theme
 sphinx_fontawesome
 sphinx-intl
 sphinx-sitemap
+unstructured
