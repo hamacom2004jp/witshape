@@ -4,7 +4,7 @@ from cmdbox.app.web import Web
 from fastapi import FastAPI, Request, Response, HTTPException
 
 
-class VersionsExtknow(feature.WebFeature):
+class VersionsWitshape(feature.WebFeature):
     def route(self, web:Web, app:FastAPI) -> None:
         """
         webモードのルーティングを設定します

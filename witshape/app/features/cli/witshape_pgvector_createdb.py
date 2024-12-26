@@ -82,7 +82,6 @@ class PgvectorCreatedb(feature.Feature):
                 dbpass=args.dbpass,
                 dbtimeout=args.dbtimeout)
             db.create_db(newdbname=args.newdbname)
-            #db.create_table()
             ret = dict(success="createdb success.")
             logger.info(f"createdb success. dbhost={args.dbhost}, dbport={args.dbport}, dbname={args.dbname}, dbuser={args.dbuser}, " + \
                         f"newdbname={args.newdbname}")

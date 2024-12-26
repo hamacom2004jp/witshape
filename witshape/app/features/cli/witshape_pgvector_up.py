@@ -1,11 +1,8 @@
 from cmdbox.app import common, feature
-from witshape.app import pgvector
-from witshape import version
 from pathlib import Path
 from typing import Dict, Any, Tuple, Union, List
 import argparse
 import logging
-import shutil
 
 
 class PgvectorInstall(feature.Feature):
@@ -25,7 +22,7 @@ class PgvectorInstall(feature.Feature):
         Returns:
             str: コマンド
         """
-        return 'uninstall'
+        return 'up'
 
     def get_option(self):
         """
@@ -36,8 +33,8 @@ class PgvectorInstall(feature.Feature):
         """
         return dict(
             type="str", default=None, required=False, multi=False, hide=False, use_redis=self.USE_REDIS_FALSE,
-            discription_ja="pgvectorのコンテナをアンインストールします。",
-            discription_en="Uninstall the pgvector container.",
+            discription_ja="pgvectorのコンテナを起動します。",
+            discription_en="Up the pgvector container.",
             choise=[
             ])
 
@@ -56,16 +53,16 @@ class PgvectorInstall(feature.Feature):
         """
         try:
             dist_path = Path('pgvectordb')
-            returncode, output, cmd = common.cmd(f"docker compose -f {dist_path}/docker-compose.yml down --rmi all", logger, slise=-1)
+            returncode, output, cmd = common.cmd(f"docker compose -f {dist_path}/docker-compose.yml up -d", logger, slise=-1)
             if returncode != 0:
-                ret = dict(error=dict(cmd=cmd, msg=f"uninstall error: {output}"))
-                logger.error(f"uninstall error: {output}, cmd: {cmd}")
+                ret = dict(error=dict(cmd=cmd, msg=f"up error: {output}"))
+                logger.error(f"up error: {output}, cmd: {cmd}")
 
-            ret = dict(success=dict(cmd=cmd, msg=f"uninstall success: {output}"))
-            logger.info(f"uninstall success: {output}, cmd: {cmd}")
+            ret = dict(success=dict(cmd=cmd, msg=f"up success: {output}"))
+            logger.info(f"up success: {output}, cmd: {cmd}")
         except Exception as e:
-            logger.error(f"uninstall error: {str(e)}")
-            ret = dict(error=f"uninstall error: {str(e)}")
+            logger.error(f"up error: {str(e)}")
+            ret = dict(error=f"up error: {str(e)}")
         common.print_format(ret, args.format, tm, args.output_json, args.output_json_append, pf=pf)
         if 'success' not in ret:
             return 1, ret, None

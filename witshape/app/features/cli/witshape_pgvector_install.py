@@ -1,5 +1,4 @@
 from cmdbox.app import common, feature
-from witshape.app import pgvector
 from witshape import version
 from pathlib import Path
 from typing import Dict, Any, Tuple, Union, List
@@ -25,7 +24,7 @@ class PgvectorInstall(feature.Feature):
         Returns:
             str: コマンド
         """
-        return 'up'
+        return 'install'
 
     def get_option(self):
         """
@@ -36,8 +35,8 @@ class PgvectorInstall(feature.Feature):
         """
         return dict(
             type="str", default=None, required=False, multi=False, hide=False, use_redis=self.USE_REDIS_FALSE,
-            discription_ja="pgvectorのコンテナを起動します。",
-            discription_en="Up the pgvector container.",
+            discription_ja="pgvectorのコンテナをインストールします。",
+            discription_en="Install the pgvector container.",
             choise=[
             ])
 
@@ -56,16 +55,17 @@ class PgvectorInstall(feature.Feature):
         """
         try:
             dist_path = Path('pgvectordb')
-            returncode, output, cmd = common.cmd(f"docker compose -f {dist_path}/docker-compose.yml up -d", logger, slise=-1)
+            src_path = Path(version.__file__).parent / 'docker' / 'pgvectordb'
+            shutil.copytree(src_path, dist_path, dirs_exist_ok=True)
+            returncode, output, cmd = common.cmd(f"docker compose -f {dist_path}/docker-compose.yml build pgvectordb", logger, slise=-1)
             if returncode != 0:
-                ret = dict(error=dict(cmd=cmd, msg=f"up error: {output}"))
-                logger.error(f"up error: {output}, cmd: {cmd}")
-
-            ret = dict(success=dict(cmd=cmd, msg=f"up success: {output}"))
-            logger.info(f"up success: {output}, cmd: {cmd}")
+                ret = dict(error=dict(cmd=cmd, msg=f"install error: {output}"))
+                logger.error(f"install error: {output}, cmd: {cmd}")
+            ret = dict(success=dict(cmd=cmd, msg=f"install success: {output}"))
+            logger.info(f"install success: {output}, cmd: {cmd}")
         except Exception as e:
-            logger.error(f"up error: {str(e)}")
-            ret = dict(error=f"up error: {str(e)}")
+            logger.error(f"install error: {str(e)}")
+            ret = dict(error=f"install error: {str(e)}")
         common.print_format(ret, args.format, tm, args.output_json, args.output_json_append, pf=pf)
         if 'success' not in ret:
             return 1, ret, None

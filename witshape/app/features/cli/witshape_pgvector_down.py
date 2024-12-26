@@ -1,11 +1,8 @@
 from cmdbox.app import common, feature
-from witshape.app import pgvector
-from witshape import version
 from pathlib import Path
 from typing import Dict, Any, Tuple, Union, List
 import argparse
 import logging
-import shutil
 
 
 class PgvectorInstall(feature.Feature):
