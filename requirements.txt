@@ -5,6 +5,8 @@ langchain_community
 langchain-google-vertexai
 langchain_openai
 langchain_postgres
+markdown
+pdfplumber
 psycopg[binary]
 requests
 sphinx

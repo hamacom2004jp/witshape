@@ -46,6 +46,9 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
             dict(opt="loadpath", type="dir", default=".", required=False, multi=False, hide=False, choise=None,
                 discription_ja="読込みパスを指定します。",
                 discription_en="Specifies the load path."),
+            dict(opt="pdf_chunk_table", type="str", default="table", required=False, multi=False, hide=False, choise=["none", "table", "line", "line_with_header"],
+                discription_ja="PDFファイル内の表のチャンク方法を指定します。 `none` :表単位でチャンクしない、 `table` :表単位、 'line' :行単位、 'line_with_header' :行単位(ヘッダ付き)",
+                discription_en="Specifies how to chunk tables in the PDF file. `none` :do not chunk by table, `table` :by table, 'line' :by line, 'line_with_header' :by line (with header)"),
             dict(opt="chunk_size", type="int", default=1000, required=False, multi=False, hide=False, choise=None,
                 discription_ja="チャンクサイズを指定します。",
                 discription_en="Specifies the chunk size."),
@@ -85,38 +88,38 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
             md_splitter = MarkdownTextSplitter(chunk_size=args.chunk_size, chunk_overlap=args.chunk_overlap)
             txt_splitter = RecursiveCharacterTextSplitter(chunk_size=args.chunk_size, chunk_overlap=args.chunk_overlap, separators=chunk_separator)
 
+            # ベクトルストア作成
+            vector_store = self.create_vectorstore(args, embeddings)
+            ids = []
             # ドキュメント読込み
-            docs = []
             if args.loadprov == 'local':
                 if args.loadpath is None: raise ValueError("loadpath is required.")
                 if args.loadgrep is None: raise ValueError("loadgrep is required.")
                 loadpath = Path(args.loadpath)
                 if not loadpath.exists(): raise ValueError("loadpath is not found.")
+                docs = None
                 for file in loadpath.glob(args.loadgrep):
                     if not file.is_file():
                         continue
                     try:
-                        if file.suffix == '.pdf': docs += self.load_pdf(file, args, txt_splitter)
-                        elif file.suffix == '.docx': docs += self.load_docx(file, args, txt_splitter)
-                        elif file.suffix == '.csv': docs += self.load_csv(file, args, txt_splitter)
-                        elif file.suffix == '.txt': docs += self.load_txt(file, args, txt_splitter)
-                        elif file.suffix == '.md': docs += self.load_md(file, args, md_splitter)
-                        elif file.suffix == '.json': docs += self.load_json(file, args, txt_splitter)
+                        if file.suffix == '.pdf': docs = self.load_pdf(file, args, txt_splitter, md_splitter)
+                        elif file.suffix == '.docx': docs = self.load_docx(file, args, txt_splitter)
+                        elif file.suffix == '.csv': docs = self.load_csv(file, args, txt_splitter)
+                        elif file.suffix == '.txt': docs = self.load_txt(file, args, txt_splitter)
+                        elif file.suffix == '.md': docs = self.load_md(file, args, md_splitter)
+                        elif file.suffix == '.json': docs = self.load_json(file, args, txt_splitter)
                         else: raise ValueError(f"Unsupport file extension.")
+                        # ドキュメント登録
+                        ids += vector_store.add_documents(docs)
                         if logger.level == logging.DEBUG:
                             logger.debug(f"embedding success. file={file}")
                     except Exception as e:
-                        logger.warning(f"embedding warning: {str(e)} file={file}")
-                if len(docs) == 0:
+                        logger.warning(f"embedding warning: {str(e)} file={file}", exc_info=True)
+                if docs is None:
                     raise ValueError(f"No documents found. loadpath={loadpath.absolute()}, loadgrep={args.loadgrep}")
             else:
                 raise ValueError("loadprov is invalid.")
 
-            # ベクトルストア作成
-            vector_store = self.create_vectorstore(args, embeddings)
-
-            # ドキュメント登録
-            ids = vector_store.add_documents(docs)
             ret = dict(success=dict(ids=ids))
             logger.info(f"embedding success. dbhost={args.dbhost}, dbport={args.dbport}, dbname={args.dbname}, dbuser={args.dbuser}, " + \
                         f"servicename={args.servicename}, size={len(ids)}")

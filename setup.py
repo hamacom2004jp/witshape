@@ -21,7 +21,9 @@ INSTALL_REQUIRES = [
     'langchain-google-vertexai',
     'langchain_openai',
     'langchain_postgres',
+    'markdown',
     'psycopg[binary]',
+    'pdfplumber',
     'requests',
     'unstructured'
 ]

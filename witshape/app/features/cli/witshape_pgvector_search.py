@@ -1,4 +1,5 @@
 from cmdbox.app import common
+from langchain_core.documents import Document
 from typing import Dict, Any, Tuple, Union, List
 from witshape.app.features.cli import pgvector_base
 import argparse
@@ -39,8 +40,23 @@ class PgvectorSearch(pgvector_base.PgvectorBase):
                 discription_ja="検索クエリーを指定します。",
                 discription_en="Specifies a search query."),
             dict(opt="kcount", type="int", default=5, required=True, multi=False, hide=False, choise=None,
-                discription_ja="検索結果件数を指定します。",
-                discription_en="Specify the number of search results."),
+                discription_ja="検索結果件数を指定します。フィルタ条件を指定するとここで指定した件数の中からフィルタします。",
+                discription_en="Specify the number of search results. If filter conditions are specified, the results will be filtered from the number of results specified here."),
+            dict(opt="filter_source", type="str", default=None, required=False, multi=False, hide=False, choise=None,
+                discription_ja="フィルタ条件のソース名を指定します。ファイルパスなどに対して中間マッチします。",
+                discription_en="Specifies the source name of the filter condition. Intermediate match for file paths, etc."),
+            dict(opt="filter_spage", type="int", default=None, required=False, multi=False, hide=False, choise=None,
+                discription_ja="フィルタ条件の開始ページを指定します。",
+                discription_en="Specifies the starting page of the filter condition."),
+            dict(opt="filter_epage", type="int", default=None, required=False, multi=False, hide=False, choise=None,
+                discription_ja="フィルタ条件の終了ページを指定します。",
+                discription_en="Specifies the end page of the filter condition."),
+            dict(opt="filter_table", type="bool", default=False, required=False, multi=False, hide=False, choise=[True, False],
+                discription_ja="フィルタ条件のテーブルを指定します。Trueを指定するとテーブル要素を対象にします。",
+                discription_en="Specifies the table of filter conditions; if True, table elements are targeted."),
+            dict(opt="filter_score", type="float", default=None, required=False, multi=False, hide=False, choise=None,
+                discription_ja="フィルタ条件の0~1のスコア閾値を指定します。0に近いほど類似しています。",
+                discription_en="Specifies the 0~1 score threshold for the filter condition; the closer to 0, the more similar it is."),
         ]
         return opt
 
@@ -66,8 +82,17 @@ class PgvectorSearch(pgvector_base.PgvectorBase):
             # ベクトルストア作成
             vector_store = self.create_vectorstore(args, embeddings)
             # 検索
-            docs = vector_store.similarity_search(args.query, k=args.kcount)
-            ret = dict(success=dict(docs=[dict(id=doc.id, type=doc.type, content=doc.page_content) for doc in docs]))
+            docs:List[Tuple[Document, float]] = vector_store.similarity_search_with_score(args.query, k=args.kcount)
+            res = []
+            for doc, score in docs:
+                if args.filter_score is not None and args.filter_score < score: continue
+                if args.filter_spage is not None and args.filter_spage > doc.metadata['page']: continue
+                if args.filter_epage is not None and args.filter_epage < doc.metadata['page']: continue
+                table = doc.metadata['table'] if 'table' in doc.metadata else False
+                if args.filter_table and not table: continue
+                res.append(dict(id=doc.id, type=doc.type, score=score, content=doc.page_content,
+                                source=doc.metadata['source'], page=doc.metadata['page'], table=table))
+            ret = dict(success=dict(docs=res))
             logger.info(f"embedding success. dbhost={args.dbhost}, dbport={args.dbport}, dbname={args.dbname}, dbuser={args.dbuser}, " + \
                         f"servicename={args.servicename}, size={len(docs)}")
         except Exception as e:

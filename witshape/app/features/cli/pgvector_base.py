@@ -13,10 +13,12 @@ from langchain_community.document_loaders import (
 from langchain_google_vertexai import VertexAIEmbeddings
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 from langchain_postgres import PGVector
-from langchain_text_splitters import TextSplitter
+from langchain_text_splitters import TextSplitter, MarkdownTextSplitter
+from pdfplumber.table import TableSettings
 from typing import Dict, Any, Tuple, Union, List
 import argparse
 import chardet
+import pdfplumber
 
 
 class PgvectorBase(feature.Feature):
@@ -149,7 +151,7 @@ class PgvectorBase(feature.Feature):
             List[Document]: ドキュメントリスト
         """
         enc = self.load_encodeing(file)
-        loader = CSVLoader(file, encoding=enc)
+        loader = CSVLoader(file.absolute(), encoding=enc)
         return loader.load_and_split(text_splitter=splitter)
 
     def load_docx(self, file:Path, args:argparse.Namespace, splitter:TextSplitter) -> List[Document]:
@@ -164,7 +166,7 @@ class PgvectorBase(feature.Feature):
         Returns:
             List[Document]: ドキュメントリスト
         """
-        loader = Docx2txtLoader(file)
+        loader = Docx2txtLoader(file.absolute())
         return loader.load_and_split(text_splitter=splitter)
 
     def load_json(self, file:Path, args:argparse.Namespace, splitter:TextSplitter) -> List[Document]:
@@ -179,7 +181,7 @@ class PgvectorBase(feature.Feature):
         Returns:
             List[Document]: ドキュメントリスト
         """
-        loader = JSONLoader(file, jq_schema=".", text_content=False)
+        loader = JSONLoader(file.absolute(), jq_schema=".", text_content=False)
         return loader.load_and_split(text_splitter=splitter)
 
     def load_md(self, file:Path, args:argparse.Namespace, splitter:TextSplitter) -> List[Document]:
@@ -194,10 +196,10 @@ class PgvectorBase(feature.Feature):
         Returns:
             List[Document]: ドキュメントリスト
         """
-        loader = UnstructuredMarkdownLoader(file, text_splitter=splitter)
+        loader = UnstructuredMarkdownLoader(str(file.absolute()), text_splitter=splitter)
         return loader.load_and_split(text_splitter=splitter)
 
-    def load_pdf(self, file:Path, args:argparse.Namespace, splitter:TextSplitter) -> List[Document]:
+    def load_pdf(self, file:Path, args:argparse.Namespace, splitter:TextSplitter, md_splitter:MarkdownTextSplitter) -> List[Document]:
         """
         PDFファイルを読み込みます
 
@@ -209,8 +211,49 @@ class PgvectorBase(feature.Feature):
         Returns:
             List[Document]: ドキュメントリスト
         """ 
-        loader = PyPDFLoader(file)
-        return loader.load_and_split(text_splitter=splitter)
+        docs = []
+        doc_tables = []
+        with pdfplumber.open(file) as pdf:
+            #tset = TableSettings.resolve(table_settings)
+            for page in pdf.pages:
+                text = page.extract_text()
+                texts = splitter.split_text(text)
+                docs += [Document(t, metadata=dict(source=str(file.absolute()), page=page.page_number)) for t in texts]
+
+                if "pdf_chunk_table" in args and args.pdf_chunk_table != "none":
+                    tables = page.extract_tables()
+                    with_header = True if "pdf_chunk_table" in args and args.pdf_chunk_table == "line_with_header" else False
+                    if tables is not None and len(tables) > 0:
+                        header_md = ""
+                        table_md = ""
+                        for table in tables:
+                            for i, row in enumerate(table):
+                                if row is None or type(row) is not list:
+                                    continue
+                                row = [('' if r is None else r) for r in row]
+                                row_md = f'|{"|".join(row)}|\n'
+                                if with_header:
+                                    if i == 0:
+                                        header_md = row_md
+                                        continue
+                                    if i >= 1:
+                                        table_chunk = md_splitter.split_text(header_md+row_md)
+                                        doc_tables += [Document(t,
+                                                                metadata=dict(
+                                                                    source=str(file.absolute()),
+                                                                    page=page.page_number,
+                                                                    table=True)) for t in table_chunk]
+                                    continue
+                                table_md += row_md
+                        table_chunk = md_splitter.split_text(table_md)
+                        doc_tables += [Document(header_md+t,
+                                                metadata=dict(
+                                                    source=str(file.absolute()),
+                                                    page=page.page_number,
+                                                    table=True)) for t in table_chunk]
+        return docs + doc_tables
+        #loader = PyPDFLoader(file)
+        #return loader.load_and_split(text_splitter=splitter)
 
     def load_txt(self, file:Path, args:argparse.Namespace, splitter:TextSplitter) -> List[Document]:
         """
@@ -225,7 +268,7 @@ class PgvectorBase(feature.Feature):
             List[Document]: ドキュメントリスト
         """
         enc = self.load_encodeing(file)
-        loader = TextLoader(file, encoding=enc)
+        loader = TextLoader(file.absolute(), encoding=enc)
         return loader.load_and_split(text_splitter=splitter)
 
     def load_encodeing(self, file:Path) -> str:
