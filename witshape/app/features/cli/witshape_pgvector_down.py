@@ -35,7 +35,7 @@ class PgvectorInstall(feature.Feature):
             type="str", default=None, required=False, multi=False, hide=False, use_redis=self.USE_REDIS_FALSE,
             discription_ja="pgvectorのコンテナを停止します。",
             discription_en="Down the pgvector container.",
-            choise=[
+            choice=[
             ])
 
     def apprun(self, logger:logging.Logger, args:argparse.Namespace, tm:float, pf:List[Dict[str, float]]=[]) -> Tuple[int, Dict[str, Any], Any]:

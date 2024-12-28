@@ -18,7 +18,6 @@ from pdfplumber.table import TableSettings
 from typing import Dict, Any, Tuple, Union, List
 import argparse
 import chardet
-import pdfplumber
 
 
 class PgvectorBase(feature.Feature):
@@ -34,47 +33,51 @@ class PgvectorBase(feature.Feature):
             type="str", default=None, required=False, multi=False, hide=False, use_redis=self.USE_REDIS_FALSE,
             discription_ja="-",
             discription_en="-",
-            choise=[
-                dict(opt="dbhost", type="str", default="localhost", required=True, multi=False, hide=True, choise=None,
+            choice=[
+                dict(opt="dbhost", type="str", default="localhost", required=True, multi=False, hide=True, choice=None,
                      discription_ja="接続するデータベースホスト名を指定します。",
                      discription_en="Specify the database host name to connect to."),
-                dict(opt="dbport", type="int", default=15432, required=True, multi=False, hide=True, choise=None,
+                dict(opt="dbport", type="int", default=15432, required=True, multi=False, hide=True, choice=None,
                      discription_ja="接続するデータベースポートを指定します。",
                      discription_en="Specify the database port to connect to."),
-                dict(opt="dbname", type="str", default="witshape", required=True, multi=False, hide=True, choise=None,
+                dict(opt="dbname", type="str", default="witshape", required=True, multi=False, hide=True, choice=None,
                      discription_ja="接続するデータベース名を指定します。",
                      discription_en="Specify the name of the database to connect to."),
-                dict(opt="dbuser", type="str", default="postgres", required=True, multi=False, hide=True, choise=None,
+                dict(opt="dbuser", type="str", default="postgres", required=True, multi=False, hide=True, choice=None,
                      discription_ja="接続するデータベースユーザー名を指定します。",
                      discription_en="Specifies the database user name to connect to."),
-                dict(opt="dbpass", type="str", default="postgres", required=True, multi=False, hide=True, choise=None,
+                dict(opt="dbpass", type="str", default="postgres", required=True, multi=False, hide=True, choice=None,
                      discription_ja="接続するデータベースパスワードを指定します。",
                      discription_en="Specify the database password to connect to."),
-                dict(opt="dbtimeout", type="int", default=30, required=False, multi=False, hide=True, choise=None,
+                dict(opt="dbtimeout", type="int", default=30, required=False, multi=False, hide=True, choice=None,
                      discription_ja="データベース接続のタイムアウトを指定します。",
                      discription_en="Specifies the database connection timeout."),
-                dict(opt="servicename", type="str", default=None, required=False, multi=False, hide=False, choise=None,
+                dict(opt="servicename", type="str", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="サービス名を指定します。",
                      discription_en="Specify the service name."),
-                dict(opt="llmprov", type="str", default="azureopenai", required=False, multi=False, hide=False, choise=["azureopenai", "openai", "vertexai"],
+                dict(opt="llmprov", type="str", default="azureopenai", required=False, multi=False, hide=False, choice=["azureopenai", "openai", "vertexai"],
                      discription_ja="llmのプロバイダを指定します。",
-                     discription_en="Specify llm provider."),
-                dict(opt="llmprojectid", type="str", default=None, required=False, multi=False, hide=False, choise=None,
+                     discription_en="Specify llm provider.",
+                     choice_show=dict(azureopenai=["llmapikey", "llmendpoint"],
+                                      openai=["llmapikey", "llmendpoint"],
+                                      vertexai=["llmprojectid", "llmsvaccountfile", "llmlocation"],),
+                     ),
+                dict(opt="llmprojectid", type="str", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="llmのプロバイダ接続のためのプロジェクトIDを指定します。",
                      discription_en="Specify the project ID for llm's provider connection."),
-                dict(opt="llmsvaccountfile", type="file", default=None, required=False, multi=False, hide=False, choise=None,
+                dict(opt="llmsvaccountfile", type="file", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="llmのプロバイダ接続のためのサービスアカウントファイルを指定します。",
                      discription_en="Specifies the service account file for llm's provider connection."),
-                dict(opt="llmlocation", type="str", default=None, required=False, multi=False, hide=False, choise=None,
+                dict(opt="llmlocation", type="str", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="llmのプロバイダ接続のためのロケーションを指定します。",
                      discription_en="Specify the project ID for llm's provider connection."),
-                dict(opt="llmapikey", type="str", default=None, required=False, multi=False, hide=False, choise=None,
+                dict(opt="llmapikey", type="str", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="llmのプロバイダ接続のためのAPIキーを指定します。",
                      discription_en="Specify API key for llm provider connection."),
-                dict(opt="llmendpoint", type="str", default=None, required=False, multi=False, hide=False, choise=None,
+                dict(opt="llmendpoint", type="str", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="llmのプロバイダ接続のためのエンドポイントを指定します。",
                      discription_en="Specifies the endpoint for llm provider connections."),
-                dict(opt="llmmodel", type="str", default="text-multilingual-embedding-002", required=False, multi=False, hide=False, choise=None,
+                dict(opt="llmmodel", type="str", default="text-multilingual-embedding-002", required=False, multi=False, hide=False, choice=None,
                      discription_ja="llmの埋め込みモデルを指定します。",
                      discription_en="Specifies the embedding model for llm."),
             ])
@@ -211,49 +214,8 @@ class PgvectorBase(feature.Feature):
         Returns:
             List[Document]: ドキュメントリスト
         """ 
-        docs = []
-        doc_tables = []
-        with pdfplumber.open(file) as pdf:
-            #tset = TableSettings.resolve(table_settings)
-            for page in pdf.pages:
-                text = page.extract_text()
-                texts = splitter.split_text(text)
-                docs += [Document(t, metadata=dict(source=str(file.absolute()), page=page.page_number)) for t in texts]
-
-                if "pdf_chunk_table" in args and args.pdf_chunk_table != "none":
-                    tables = page.extract_tables()
-                    with_header = True if "pdf_chunk_table" in args and args.pdf_chunk_table == "line_with_header" else False
-                    if tables is not None and len(tables) > 0:
-                        header_md = ""
-                        table_md = ""
-                        for table in tables:
-                            for i, row in enumerate(table):
-                                if row is None or type(row) is not list:
-                                    continue
-                                row = [('' if r is None else r) for r in row]
-                                row_md = f'|{"|".join(row)}|\n'
-                                if with_header:
-                                    if i == 0:
-                                        header_md = row_md
-                                        continue
-                                    if i >= 1:
-                                        table_chunk = md_splitter.split_text(header_md+row_md)
-                                        doc_tables += [Document(t,
-                                                                metadata=dict(
-                                                                    source=str(file.absolute()),
-                                                                    page=page.page_number,
-                                                                    table=True)) for t in table_chunk]
-                                    continue
-                                table_md += row_md
-                        table_chunk = md_splitter.split_text(table_md)
-                        doc_tables += [Document(header_md+t,
-                                                metadata=dict(
-                                                    source=str(file.absolute()),
-                                                    page=page.page_number,
-                                                    table=True)) for t in table_chunk]
-        return docs + doc_tables
-        #loader = PyPDFLoader(file)
-        #return loader.load_and_split(text_splitter=splitter)
+        loader = PyPDFLoader(file)
+        return loader.load_and_split(text_splitter=splitter)
 
     def load_txt(self, file:Path, args:argparse.Namespace, splitter:TextSplitter) -> List[Document]:
         """

@@ -1,13 +1,16 @@
 from cmdbox.app import common
 from pathlib import Path
+from langchain_core.documents import Document
 from langchain_text_splitters import (
     MarkdownTextSplitter,
-    RecursiveCharacterTextSplitter
+    RecursiveCharacterTextSplitter,
+    TextSplitter
 )
 from typing import Dict, Any, Tuple, Union, List
 from witshape.app.features.cli import pgvector_base
 import argparse
 import logging
+import pdfplumber
 
 
 class PgvectorEmbedd(pgvector_base.PgvectorBase):
@@ -39,28 +42,28 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
         opt = super().get_option()
         opt["discription_ja"] = "データを読込み特徴値をデータベースに登録します。"
         opt["discription_en"] = "Reads data and registers embedded values in the database."
-        opt["choise"] += [
-            dict(opt="loadprov", type="str", default="azureopenai", required=False, multi=False, hide=False, choise=["local"],
+        opt["choice"] += [
+            dict(opt="loadprov", type="str", default="azureopenai", required=False, multi=False, hide=False, choice=["local"],
                 discription_ja="読込みプロバイダを指定します。",
                 discription_en="Specifies the load provider."),
-            dict(opt="loadpath", type="dir", default=".", required=False, multi=False, hide=False, choise=None,
+            dict(opt="loadpath", type="dir", default=".", required=False, multi=False, hide=False, choice=None,
                 discription_ja="読込みパスを指定します。",
                 discription_en="Specifies the load path."),
-            dict(opt="pdf_chunk_table", type="str", default="table", required=False, multi=False, hide=False, choise=["none", "table", "line", "line_with_header"],
-                discription_ja="PDFファイル内の表のチャンク方法を指定します。 `none` :表単位でチャンクしない、 `table` :表単位、 'line' :行単位、 'line_with_header' :行単位(ヘッダ付き)",
-                discription_en="Specifies how to chunk tables in the PDF file. `none` :do not chunk by table, `table` :by table, 'line' :by line, 'line_with_header' :by line (with header)"),
-            dict(opt="chunk_size", type="int", default=1000, required=False, multi=False, hide=False, choise=None,
-                discription_ja="チャンクサイズを指定します。",
-                discription_en="Specifies the chunk size."),
-            dict(opt="chunk_overlap", type="int", default=50, required=False, multi=False, hide=False, choise=None,
-                discription_ja="チャンクのオーバーラップサイズを指定します。",
-                discription_en="Specifies the overlap size of the chunk."),
-            dict(opt="chunk_separator", type="str", default=None, required=False, multi=True, hide=False, choise=None,
-                discription_ja="チャンク化するための区切り文字を指定します。",
-                discription_en="Specifies the delimiter character for chunking."),
-            dict(opt="loadgrep", type="str", default="*", required=False, multi=False, hide=False, choise=None,
+            dict(opt="loadgrep", type="str", default="*", required=False, multi=False, hide=False, choice=None,
                 discription_ja="読込みgrepパターンを指定します。",
                 discription_en="Specifies a load grep pattern."),
+            dict(opt="pdf_chunk_table", type="str", default="table", required=False, multi=False, hide=False, choice=["none", "table", "row_with_header"],
+                discription_ja="PDFファイル内の表のチャンク方法を指定します。 `none` :表単位でチャンクしない、 `table` :表単位、 `row_with_header` :行単位(ヘッダ付き)",
+                discription_en="Specifies how to chunk tables in the PDF file. `none` :do not chunk by table, `table` :by table, `row_with_header` :by row (with header)"),
+            dict(opt="chunk_size", type="int", default=1000, required=False, multi=False, hide=False, choice=None,
+                discription_ja="チャンクサイズを指定します。",
+                discription_en="Specifies the chunk size."),
+            dict(opt="chunk_overlap", type="int", default=50, required=False, multi=False, hide=False, choice=None,
+                discription_ja="チャンクのオーバーラップサイズを指定します。",
+                discription_en="Specifies the overlap size of the chunk."),
+            dict(opt="chunk_separator", type="str", default=None, required=False, multi=True, hide=False, choice=None,
+                discription_ja="チャンク化するための区切り文字を指定します。",
+                discription_en="Specifies the delimiter character for chunking."),
         ]
         return opt
 
@@ -132,3 +135,57 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
         if 'success' not in ret:
             return 1, ret, None
         return 0, ret, None
+
+    def load_pdf(self, file:Path, args:argparse.Namespace, splitter:TextSplitter, md_splitter:MarkdownTextSplitter) -> List[Document]:
+        """
+        PDFファイルを読み込みます
+
+        Args:
+            file (Path): ファイル
+            args (argparse.Namespace): 引数
+            splitter (TextSplitter): テキスト分割オブジェクト
+
+        Returns:
+            List[Document]: ドキュメントリスト
+        """ 
+        docs = []
+        doc_tables = []
+        with pdfplumber.open(file) as pdf:
+            #tset = TableSettings.resolve(table_settings)
+            for page in pdf.pages:
+                text = page.extract_text()
+                texts = splitter.split_text(text)
+                docs += [Document(t, metadata=dict(source=str(file.absolute()), page=page.page_number)) for t in texts]
+
+                if "pdf_chunk_table" in args and args.pdf_chunk_table != "none":
+                    tables = page.extract_tables()
+                    with_header = True if "pdf_chunk_table" in args and args.pdf_chunk_table == "row_with_header" else False
+                    if tables is not None and len(tables) > 0:
+                        header_md = ""
+                        table_md = ""
+                        for table in tables:
+                            for i, row in enumerate(table):
+                                if row is None or type(row) is not list:
+                                    continue
+                                row = [('' if r is None else r) for r in row]
+                                row_md = f'|{"|".join(row)}|\n'
+                                if with_header:
+                                    if i == 0:
+                                        header_md = row_md
+                                        continue
+                                    if i >= 1:
+                                        table_chunk = md_splitter.split_text(header_md+row_md)
+                                        doc_tables += [Document(t,
+                                                                metadata=dict(
+                                                                    source=str(file.absolute()),
+                                                                    page=page.page_number,
+                                                                    table=True)) for t in table_chunk]
+                                    continue
+                                table_md += row_md
+                        table_chunk = md_splitter.split_text(table_md)
+                        doc_tables += [Document(header_md+t,
+                                                metadata=dict(
+                                                    source=str(file.absolute()),
+                                                    page=page.page_number,
+                                                    table=True)) for t in table_chunk]
+        return docs + doc_tables
