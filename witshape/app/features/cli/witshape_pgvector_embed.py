@@ -7,6 +7,7 @@ from langchain_text_splitters import (
     TextSplitter
 )
 from typing import Dict, Any, Tuple, Union, List
+from witshape.app import pgvector
 from witshape.app.features.cli import pgvector_base
 import argparse
 import logging
@@ -52,6 +53,9 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
             dict(opt="loadgrep", type="str", default="*", required=False, multi=False, hide=False, choice=None,
                 discription_ja="読込みgrepパターンを指定します。",
                 discription_en="Specifies a load grep pattern."),
+            dict(opt="savetype", type="str", default="per_doc", required=False, multi=False, hide=False, choice=["per_doc", "per_service", "add_only"],
+                discription_ja="保存パターンを指定します。 `per_doc` :ドキュメント単位、 `per_service` :サービス単位、 `add_only` :追加のみ",
+                discription_en="Specify the storage pattern. `per_doc` :per document, `per_service` :per service, `add_only` :add only"),
             dict(opt="pdf_chunk_table", type="str", default="table", required=False, multi=False, hide=False, choice=["none", "table", "row_with_header"],
                 discription_ja="PDFファイル内の表のチャンク方法を指定します。 `none` :表単位でチャンクしない、 `table` :表単位、 `row_with_header` :行単位(ヘッダ付き)",
                 discription_en="Specifies how to chunk tables in the PDF file. `none` :do not chunk by table, `table` :by table, `row_with_header` :by row (with header)"),
@@ -90,6 +94,7 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
             chunk_separator = None if args.chunk_separator is None or len(args.chunk_separator)<=0 else args.chunk_separator
             md_splitter = MarkdownTextSplitter(chunk_size=args.chunk_size, chunk_overlap=args.chunk_overlap)
             txt_splitter = RecursiveCharacterTextSplitter(chunk_size=args.chunk_size, chunk_overlap=args.chunk_overlap, separators=chunk_separator)
+            pg = pgvector.Pgvector(logger, args.dbhost, args.dbport, args.dbname, args.dbuser, args.dbpass, args.dbtimeout)
 
             # ベクトルストア作成
             vector_store = self.create_vectorstore(args, embeddings)
@@ -100,11 +105,15 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
                 if args.loadgrep is None: raise ValueError("loadgrep is required.")
                 loadpath = Path(args.loadpath)
                 if not loadpath.exists(): raise ValueError("loadpath is not found.")
+                if args.savetype == 'per_service':
+                    sv_delids = pg.select_docids(args.servicename, None)
                 docs = None
                 for file in loadpath.glob(args.loadgrep):
                     if not file.is_file():
                         continue
                     try:
+                        if args.savetype == 'per_doc':
+                            doc_delids = pg.select_docids(args.servicename, file)
                         if file.suffix == '.pdf': docs = self.load_pdf(file, args, txt_splitter, md_splitter)
                         elif file.suffix == '.docx': docs = self.load_docx(file, args, txt_splitter)
                         elif file.suffix == '.csv': docs = self.load_csv(file, args, txt_splitter)
@@ -114,12 +123,18 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
                         else: raise ValueError(f"Unsupport file extension.")
                         # ドキュメント登録
                         ids += vector_store.add_documents(docs)
+                        # 古いドキュメント削除
+                        if args.savetype == 'per_doc':
+                            vector_store.delete(ids=doc_delids, collection_only=True)
                         if logger.level == logging.DEBUG:
                             logger.debug(f"embedding success. file={file}")
                     except Exception as e:
                         logger.warning(f"embedding warning: {str(e)} file={file}", exc_info=True)
                 if docs is None:
                     raise ValueError(f"No documents found. loadpath={loadpath.absolute()}, loadgrep={args.loadgrep}")
+                # サービス単位で古いドキュメント削除
+                if args.savetype == 'per_service':
+                    vector_store.delete(ids=sv_delids, collection_only=True)
             else:
                 raise ValueError("loadprov is invalid.")
 
@@ -155,7 +170,7 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
             for page in pdf.pages:
                 text = page.extract_text()
                 texts = splitter.split_text(text)
-                docs += [Document(t, metadata=dict(source=str(file.absolute()), page=page.page_number)) for t in texts]
+                docs += [Document(t, metadata=dict(source=str(file), page=page.page_number)) for t in texts]
 
                 if "pdf_chunk_table" in args and args.pdf_chunk_table != "none":
                     tables = page.extract_tables()
@@ -167,7 +182,7 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
                             for i, row in enumerate(table):
                                 if row is None or type(row) is not list:
                                     continue
-                                row = [('' if r is None else r) for r in row]
+                                row = [('' if r is None else r.replace('\n', ' ')) for r in row] # セル内の改行をスペースに変換
                                 row_md = f'|{"|".join(row)}|\n'
                                 if with_header:
                                     if i == 0:

@@ -1,9 +1,9 @@
 import datetime
 
-dt_now = datetime.datetime(2024, 12, 14)
+dt_now = datetime.datetime(2025, 1, 3)
 __appid__ = 'witshape'
 __title__ = 'witshape'
-__version__ = '0.1.0'
+__version__ = '0.1.2'
 __copyright__ = f'Copyright © 2023-{dt_now.strftime("%Y")} hamacom2004jp'
 __pypiurl__ = 'https://pypi.org/project/witshape/'
 __srcurl__ = 'https://github.com/hamacom2004jp/witshape'

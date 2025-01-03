@@ -11,6 +11,7 @@ from langchain_community.document_loaders import (
     TextLoader,
     UnstructuredMarkdownLoader)
 from langchain_google_vertexai import VertexAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 from langchain_postgres import PGVector
 from langchain_text_splitters import TextSplitter, MarkdownTextSplitter
@@ -55,12 +56,14 @@ class PgvectorBase(feature.Feature):
                 dict(opt="servicename", type="str", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="サービス名を指定します。",
                      discription_en="Specify the service name."),
-                dict(opt="llmprov", type="str", default="azureopenai", required=False, multi=False, hide=False, choice=["azureopenai", "openai", "vertexai"],
+                dict(opt="llmprov", type="str", default="azureopenai", required=False, multi=False, hide=False,
+                     choice=["azureopenai", "openai", "vertexai", "ollama"],
                      discription_ja="llmのプロバイダを指定します。",
                      discription_en="Specify llm provider.",
                      choice_show=dict(azureopenai=["llmapikey", "llmendpoint"],
                                       openai=["llmapikey", "llmendpoint"],
-                                      vertexai=["llmprojectid", "llmsvaccountfile", "llmlocation"],),
+                                      vertexai=["llmprojectid", "llmsvaccountfile", "llmlocation"],
+                                      ollama=["llmendpoint", "llmmodel"],),
                      ),
                 dict(opt="llmprojectid", type="str", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="llmのプロバイダ接続のためのプロジェクトIDを指定します。",
@@ -70,7 +73,7 @@ class PgvectorBase(feature.Feature):
                      discription_en="Specifies the service account file for llm's provider connection."),
                 dict(opt="llmlocation", type="str", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="llmのプロバイダ接続のためのロケーションを指定します。",
-                     discription_en="Specify the project ID for llm's provider connection."),
+                     discription_en="Specifies the location for llm provider connections."),
                 dict(opt="llmapikey", type="str", default=None, required=False, multi=False, hide=False, choice=None,
                      discription_ja="llmのプロバイダ接続のためのAPIキーを指定します。",
                      discription_en="Specify API key for llm provider connection."),
@@ -111,6 +114,10 @@ class PgvectorBase(feature.Feature):
                 'https://www.googleapis.com/auth/cloud-platform'
             ])
             embeddings = VertexAIEmbeddings(model_name=args.llmmodel, project=args.llmprojectid, location=args.llmlocation, credentials=scoped_credentials)
+        elif args.llmprov == 'ollama':
+            if args.llmmodel is None: raise ValueError("llmmodel is required.")
+            if args.llmendpoint is None: raise ValueError("llmendpoint is required.")
+            embeddings = OllamaEmbeddings(model=args.llmmodel, base_url=args.llmendpoint)
         else:
             raise ValueError("llmprov is invalid.")
         return embeddings
@@ -154,7 +161,7 @@ class PgvectorBase(feature.Feature):
             List[Document]: ドキュメントリスト
         """
         enc = self.load_encodeing(file)
-        loader = CSVLoader(file.absolute(), encoding=enc)
+        loader = CSVLoader(file, encoding=enc)
         return loader.load_and_split(text_splitter=splitter)
 
     def load_docx(self, file:Path, args:argparse.Namespace, splitter:TextSplitter) -> List[Document]:
@@ -169,7 +176,7 @@ class PgvectorBase(feature.Feature):
         Returns:
             List[Document]: ドキュメントリスト
         """
-        loader = Docx2txtLoader(file.absolute())
+        loader = Docx2txtLoader(file)
         return loader.load_and_split(text_splitter=splitter)
 
     def load_json(self, file:Path, args:argparse.Namespace, splitter:TextSplitter) -> List[Document]:
@@ -184,7 +191,7 @@ class PgvectorBase(feature.Feature):
         Returns:
             List[Document]: ドキュメントリスト
         """
-        loader = JSONLoader(file.absolute(), jq_schema=".", text_content=False)
+        loader = JSONLoader(file, jq_schema=".", text_content=False)
         return loader.load_and_split(text_splitter=splitter)
 
     def load_md(self, file:Path, args:argparse.Namespace, splitter:TextSplitter) -> List[Document]:
@@ -199,7 +206,7 @@ class PgvectorBase(feature.Feature):
         Returns:
             List[Document]: ドキュメントリスト
         """
-        loader = UnstructuredMarkdownLoader(str(file.absolute()), text_splitter=splitter)
+        loader = UnstructuredMarkdownLoader(str(file), text_splitter=splitter)
         return loader.load_and_split(text_splitter=splitter)
 
     def load_pdf(self, file:Path, args:argparse.Namespace, splitter:TextSplitter, md_splitter:MarkdownTextSplitter) -> List[Document]:
@@ -230,7 +237,7 @@ class PgvectorBase(feature.Feature):
             List[Document]: ドキュメントリスト
         """
         enc = self.load_encodeing(file)
-        loader = TextLoader(file.absolute(), encoding=enc)
+        loader = TextLoader(file, encoding=enc)
         return loader.load_and_split(text_splitter=splitter)
 
     def load_encodeing(self, file:Path) -> str:

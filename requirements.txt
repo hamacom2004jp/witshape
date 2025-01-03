@@ -3,6 +3,7 @@ chardet
 jq
 langchain_community
 langchain-google-vertexai
+langchain_ollama
 langchain_openai
 langchain_postgres
 markdown
@@ -14,4 +15,5 @@ sphinx-rtd-theme
 sphinx_fontawesome
 sphinx-intl
 sphinx-sitemap
+twine
 unstructured

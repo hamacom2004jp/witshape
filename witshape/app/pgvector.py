@@ -1,5 +1,7 @@
+from pathlib import Path
 import logging
 import psycopg
+
 
 class Pgvector:
     def __init__(self, logger:logging.Logger, dbhost:str, dbport:int, dbname:str, dbuser:str, dbpass:str, dbtimeout:int):
@@ -86,3 +88,31 @@ class Pgvector:
             conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(f"DROP DATABASE {dbname}")
+
+    def select_docids(self, servicename:str, file:Path=None):
+        """
+        ドキュメントIDを取得します
+
+        Args:
+            servicename (str): サービス名
+            file (Path): ファイル名
+        """
+        with psycopg.connect(
+            host=self.dbhost,
+            port=self.dbport,
+            dbname=self.dbname,
+            user=self.dbuser,
+            password=self.dbpass,
+            connect_timeout=self.dbtimeout) as conn:
+            conn.autocommit = True
+            with conn.cursor() as cur:
+                where = None
+                if servicename is not None and file is not None:
+                    where = f"WHERE c.name = '{servicename}' AND e.cmetadata->>'source' = '{file}'"
+                elif servicename is not None:
+                    where = f"WHERE c.name = '{servicename}'"
+                else:
+                    raise ValueError(f"select_docids param invalid. savetype={savetype}, servicename={servicename}, file={file}")
+                cur.execute(f"SELECT e.id FROM {self.dbuser}.langchain_pg_embedding e inner join {self.dbuser}.langchain_pg_collection c " + \
+                            f"ON e.collection_id = c.uuid {where}")
+                return [record[0] for record in cur]

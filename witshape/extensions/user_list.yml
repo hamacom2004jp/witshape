@@ -63,7 +63,8 @@ pathrule:
       rule: allow
     - groups: [user]
       paths: [/signin, /assets, /bbforce_cmd, /copyright, /dosignin, /dosignout,
-              /exec_cmd, /exec_pipe, /filer, /gui, /get_server_opt, /usesignout, /versions_cmdbox, /versions_used, /versions_witshape]
+              /exec_cmd, /exec_pipe, /filer, /gui, /get_server_opt, /usesignout, /versions_cmdbox, /versions_used,
+              /versions_witshape, /pgvector_search/retrieval]
       rule: allow
     - groups: [readonly]
       paths: [/gui/del_cmd, /gui/del_pipe, /gui/save_cmd, /gui/save_pipe]

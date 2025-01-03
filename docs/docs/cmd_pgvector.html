@@ -1,0 +1,492 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="jp" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Command Reference ( pgvector mode ) &mdash; witshape 2025/01/03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=3158e135"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Developer Information" href="developer.html" />
+    <link rel="prev" title="Command Reference" href="command.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            witshape
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="command.html">Command Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PGVector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#createdb-witshape-m-pgvector-c-createdb-option">Createdb : <cite>witshape -m pgvector -c createdb &lt;Option&gt;</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#down-witshape-m-pgvector-c-down-option">Down : <cite>witshape -m pgvector -c down &lt;Option&gt;</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#embedd-witshape-m-pgvector-c-embedd-option">Embedd : <cite>witshape -m pgvector -c embedd &lt;Option&gt;</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-witshape-m-pgvector-c-install-option">Install : <cite>witshape -m pgvector -c install &lt;Option&gt;</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#search-witshape-m-pgvector-c-search-option">Search : <cite>witshape -m pgvector -c search &lt;Option&gt;</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uninstall-witshape-m-pgvector-c-uninstall-option">Uninstall : <cite>witshape -m pgvector -c uninstall &lt;Option&gt;</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#up-witshape-m-pgvector-c-up-option">up : <cite>witshape -m pgvector -c up &lt;Option&gt;</cite></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">witshape</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="command.html">Command Reference</a></li>
+      <li class="breadcrumb-item active">Command Reference ( pgvector mode )</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/docs/cmd_pgvector.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="command-reference-pgvector-mode">
+<h1>Command Reference ( pgvector mode )<a class="headerlink" href="#command-reference-pgvector-mode" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>List of pgvector mode commands.</p></li>
+</ul>
+<section id="createdb-witshape-m-pgvector-c-createdb-option">
+<h2>Createdb : <cite>witshape -m pgvector -c createdb &lt;Option&gt;</cite><a class="headerlink" href="#createdb-witshape-m-pgvector-c-createdb-option" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>PostgreSQL database creation command for pgvector.</p></li>
+<li><p>Install extensions and schemas required for vector searches.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>--dbhost &lt;IP address or host name&gt;</p></td>
+<td></td>
+<td><p>Specify the database host name to connect to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--dbport &lt;port number&gt;</p></td>
+<td></td>
+<td><p>Specify the database port to connect to.</p></td>
+</tr>
+<tr class="row-even"><td><p>--dbname &lt;db name&gt;</p></td>
+<td></td>
+<td><p>Specify the name of the database to connect to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--dbuser &lt;db user name&gt;</p></td>
+<td></td>
+<td><p>Specifies the database user name to connect to.</p></td>
+</tr>
+<tr class="row-even"><td><p>--dbpass &lt;db user password&gt;</p></td>
+<td></td>
+<td><p>Specify the database password to connect to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--dbtimeout &lt;time-out&gt;</p></td>
+<td></td>
+<td><p>Specifies the database connection timeout.</p></td>
+</tr>
+<tr class="row-even"><td><p>--newdbname &lt;new db name&gt;</p></td>
+<td></td>
+<td><p>Specify the name of the database to be created.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="down-witshape-m-pgvector-c-down-option">
+<h2>Down : <cite>witshape -m pgvector -c down &lt;Option&gt;</cite><a class="headerlink" href="#down-witshape-m-pgvector-c-down-option" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Down the pgvector container.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="embedd-witshape-m-pgvector-c-embedd-option">
+<h2>Embedd : <cite>witshape -m pgvector -c embedd &lt;Option&gt;</cite><a class="headerlink" href="#embedd-witshape-m-pgvector-c-embedd-option" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Reads data and registers embedded values in the database.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>--dbhost &lt;IP address or host name&gt;</p></td>
+<td></td>
+<td><p>Specify the database host name to connect to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--dbport &lt;port number&gt;</p></td>
+<td></td>
+<td><p>Specify the database port to connect to.</p></td>
+</tr>
+<tr class="row-even"><td><p>--dbname &lt;db name&gt;</p></td>
+<td></td>
+<td><p>Specify the name of the database to connect to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--dbuser &lt;db user name&gt;</p></td>
+<td></td>
+<td><p>Specifies the database user name to connect to.</p></td>
+</tr>
+<tr class="row-even"><td><p>--dbpass &lt;db user password&gt;</p></td>
+<td></td>
+<td><p>Specify the database password to connect to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--dbtimeout &lt;time-out&gt;</p></td>
+<td></td>
+<td><p>Specifies the database connection timeout.</p></td>
+</tr>
+<tr class="row-even"><td><p>--servicename &lt;servicename&gt;</p></td>
+<td></td>
+<td><p>Specify the service name.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--llmprov &lt;provider&gt;</p></td>
+<td></td>
+<td><p>Specify llm provider.</p></td>
+</tr>
+<tr class="row-even"><td><p>--llmprojectid &lt;project ID&gt;</p></td>
+<td></td>
+<td><p>Specify the project ID for llm's provider connection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--llmsvaccountfile &lt;service account file&gt;</p></td>
+<td></td>
+<td><p>Specifies the service account file for llm's provider connection.</p></td>
+</tr>
+<tr class="row-even"><td><p>--llmlocation &lt;location&gt;</p></td>
+<td></td>
+<td><p>Specifies the location for llm provider connections.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--llmapikey &lt;API key&gt;</p></td>
+<td></td>
+<td><p>Specify API key for llm provider connection.</p></td>
+</tr>
+<tr class="row-even"><td><p>--llmendpoint &lt;endpoint&gt;</p></td>
+<td></td>
+<td><p>Specifies the endpoint for llm provider connections.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--llmmodel &lt;embedding model&gt;</p></td>
+<td></td>
+<td><p>Specifies the embedding model for llm.</p></td>
+</tr>
+<tr class="row-even"><td><p>--loadprov &lt;provider&gt;</p></td>
+<td></td>
+<td><p>Specifies the load provider.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--loadpath &lt;path&gt;</p></td>
+<td></td>
+<td><p>Specifies the load path.</p></td>
+</tr>
+<tr class="row-even"><td><p>--loadgrep &lt;pattern&gt;</p></td>
+<td></td>
+<td><p>Specifies a load grep pattern.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--savetype &lt;type&gt;</p></td>
+<td></td>
+<td><p>Specify the storage pattern. <cite>per_doc</cite> :per document, <cite>per_service</cite> :per service, <cite>add_only</cite> :add only</p></td>
+</tr>
+<tr class="row-even"><td><p>--pdf_chunk_table &lt;type&gt;</p></td>
+<td></td>
+<td><p>Specifies how to chunk tables in the PDF file. <cite>none</cite> :do not chunk by table, <cite>table</cite> :by table, <cite>row_with_header</cite> :by row (with header)</p></td>
+</tr>
+<tr class="row-odd"><td><p>--chunk_size &lt;size&gt;</p></td>
+<td></td>
+<td><p>Specifies the chunk size.</p></td>
+</tr>
+<tr class="row-even"><td><p>--chunk_overlap &lt;size&gt;</p></td>
+<td></td>
+<td><p>Specifies the overlap size of the chunk.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--chunk_separator &lt;separator&gt;</p></td>
+<td></td>
+<td><p>Specifies the delimiter character for chunking.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="install-witshape-m-pgvector-c-install-option">
+<h2>Install : <cite>witshape -m pgvector -c install &lt;Option&gt;</cite><a class="headerlink" href="#install-witshape-m-pgvector-c-install-option" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Install the pgvector container.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="search-witshape-m-pgvector-c-search-option">
+<h2>Search : <cite>witshape -m pgvector -c search &lt;Option&gt;</cite><a class="headerlink" href="#search-witshape-m-pgvector-c-search-option" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Search the database using the embedded values of the query.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>--dbhost &lt;IP address or host name&gt;</p></td>
+<td></td>
+<td><p>Specify the database host name to connect to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--dbport &lt;port number&gt;</p></td>
+<td></td>
+<td><p>Specify the database port to connect to.</p></td>
+</tr>
+<tr class="row-even"><td><p>--dbname &lt;db name&gt;</p></td>
+<td></td>
+<td><p>Specify the name of the database to connect to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--dbuser &lt;db user name&gt;</p></td>
+<td></td>
+<td><p>Specifies the database user name to connect to.</p></td>
+</tr>
+<tr class="row-even"><td><p>--dbpass &lt;db user password&gt;</p></td>
+<td></td>
+<td><p>Specify the database password to connect to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--dbtimeout &lt;time-out&gt;</p></td>
+<td></td>
+<td><p>Specifies the database connection timeout.</p></td>
+</tr>
+<tr class="row-even"><td><p>--servicename &lt;servicename&gt;</p></td>
+<td></td>
+<td><p>Specify the service name.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--llmprov &lt;provider&gt;</p></td>
+<td></td>
+<td><p>Specify llm provider.</p></td>
+</tr>
+<tr class="row-even"><td><p>--llmprojectid &lt;project ID&gt;</p></td>
+<td></td>
+<td><p>Specify the project ID for llm's provider connection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--llmsvaccountfile &lt;service account file&gt;</p></td>
+<td></td>
+<td><p>Specifies the service account file for llm's provider connection.</p></td>
+</tr>
+<tr class="row-even"><td><p>--llmlocation &lt;location&gt;</p></td>
+<td></td>
+<td><p>Specifies the location for llm provider connections.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--llmapikey &lt;API key&gt;</p></td>
+<td></td>
+<td><p>Specify API key for llm provider connection.</p></td>
+</tr>
+<tr class="row-even"><td><p>--llmendpoint &lt;endpoint&gt;</p></td>
+<td></td>
+<td><p>Specifies the endpoint for llm provider connections.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--llmmodel &lt;embedding model&gt;</p></td>
+<td></td>
+<td><p>Specifies the embedding model for llm.</p></td>
+</tr>
+<tr class="row-even"><td><p>--query &lt;prompt&gt;</p></td>
+<td></td>
+<td><p>Specifies a search query.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--kcount &lt;count&gt;</p></td>
+<td></td>
+<td><p>Specify the number of search results. If filter conditions are specified, the results will be filtered from the number of results specified here.</p></td>
+</tr>
+<tr class="row-even"><td><p>--filter_source &lt;source&gt;</p></td>
+<td></td>
+<td><p>Specifies the source name of the filter condition. Intermediate match for file paths, etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--filter_spage &lt;page&gt;</p></td>
+<td></td>
+<td><p>Specifies the starting page of the filter condition.</p></td>
+</tr>
+<tr class="row-even"><td><p>--filter_epage &lt;page&gt;</p></td>
+<td></td>
+<td><p>Specifies the end page of the filter condition.</p></td>
+</tr>
+<tr class="row-odd"><td><p>--filter_table &lt;table&gt;</p></td>
+<td></td>
+<td><p>Specifies the table of filter conditions; if True, table elements are targeted.</p></td>
+</tr>
+<tr class="row-even"><td><p>--filter_score &lt;score&gt;</p></td>
+<td></td>
+<td><p>Specifies the 0~1 score threshold for the filter condition; the closer to 0, the more similar it is.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="uninstall-witshape-m-pgvector-c-uninstall-option">
+<h2>Uninstall : <cite>witshape -m pgvector -c uninstall &lt;Option&gt;</cite><a class="headerlink" href="#uninstall-witshape-m-pgvector-c-uninstall-option" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Uninstall the pgvector container.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="up-witshape-m-pgvector-c-up-option">
+<h2>up : <cite>witshape -m pgvector -c up &lt;Option&gt;</cite><a class="headerlink" href="#up-witshape-m-pgvector-c-up-option" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Up the pgvector container.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="command.html" class="btn btn-neutral float-left" title="Command Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="developer.html" class="btn btn-neutral float-right" title="Developer Information" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright (c) 2023-2025 hamacom2004jp All Rights Reserved..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Install &mdash; witshape 2025/01/03 documentation</title>
+  <title>Command Reference &mdash; witshape 2025/01/03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Command Reference" href="command.html" />
-    <link rel="prev" title="witshape" href="../index.html" /> 
+    <link rel="next" title="Command Reference ( pgvector mode )" href="cmd_pgvector.html" />
+    <link rel="prev" title="Install" href="install.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,8 +44,11 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Install</a></li>
-<li class="toctree-l1"><a class="reference internal" href="command.html">Command Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cmd_pgvector.html">PGVector</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Information</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
@@ -64,9 +67,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Install</li>
+      <li class="breadcrumb-item active">Command Reference</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/docs/install.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/docs/command.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -74,20 +77,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="install">
-<h1>Install<a class="headerlink" href="#install" title="Link to this heading"></a></h1>
-<ul class="simple">
-<li><p>Install witshape with the following command.</p></li>
+  <section id="command-reference">
+<h1>Command Reference<a class="headerlink" href="#command-reference" title="Link to this heading"></a></h1>
+<p>See below for available options for the various commands.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cmd_pgvector.html">PGVector</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cmd_pgvector.html#createdb-witshape-m-pgvector-c-createdb-option">Createdb : <cite>witshape -m pgvector -c createdb &lt;Option&gt;</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_pgvector.html#down-witshape-m-pgvector-c-down-option">Down : <cite>witshape -m pgvector -c down &lt;Option&gt;</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_pgvector.html#embedd-witshape-m-pgvector-c-embedd-option">Embedd : <cite>witshape -m pgvector -c embedd &lt;Option&gt;</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_pgvector.html#install-witshape-m-pgvector-c-install-option">Install : <cite>witshape -m pgvector -c install &lt;Option&gt;</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_pgvector.html#search-witshape-m-pgvector-c-search-option">Search : <cite>witshape -m pgvector -c search &lt;Option&gt;</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_pgvector.html#uninstall-witshape-m-pgvector-c-uninstall-option">Uninstall : <cite>witshape -m pgvector -c uninstall &lt;Option&gt;</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmd_pgvector.html#up-witshape-m-pgvector-c-up-option">up : <cite>witshape -m pgvector -c up &lt;Option&gt;</cite></a></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>witshape
-witshape<span class="w"> </span>-v
-</pre></div>
-</div>
-<ul class="simple">
-<li><p>Also install the docker version of the redis server.</p></li>
+</li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">6379</span>:6379<span class="w"> </span>--name<span class="w"> </span>redis<span class="w"> </span>-it<span class="w"> </span>ubuntu/redis:latest
-</pre></div>
 </div>
 </section>
 
@@ -95,8 +100,8 @@ witshape<span class="w"> </span>-v
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="witshape" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="command.html" class="btn btn-neutral float-right" title="Command Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="install.html" class="btn btn-neutral float-left" title="Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cmd_pgvector.html" class="btn btn-neutral float-right" title="Command Reference ( pgvector mode )" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
