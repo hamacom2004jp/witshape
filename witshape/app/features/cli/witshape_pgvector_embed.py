@@ -12,6 +12,7 @@ from witshape.app.features.cli import pgvector_base
 import argparse
 import logging
 import pdfplumber
+import re
 
 
 class PgvectorEmbedd(pgvector_base.PgvectorBase):
@@ -59,6 +60,9 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
             dict(opt="pdf_chunk_table", type="str", default="table", required=False, multi=False, hide=False, choice=["none", "table", "row_with_header"],
                 discription_ja="PDFファイル内の表のチャンク方法を指定します。 `none` :表単位でチャンクしない、 `table` :表単位、 `row_with_header` :行単位(ヘッダ付き)",
                 discription_en="Specifies how to chunk tables in the PDF file. `none` :do not chunk by table, `table` :by table, `row_with_header` :by row (with header)"),
+            dict(opt="chunk_exclude", type="str", default=None, required=False, multi=True, hide=False, choice=None,
+                discription_ja="チャンクに含めない文字列を正規表現で指定します。この指定にマッチした場合はembeddingされません。",
+                discription_en="A regular expression specifying a string that should not be included in the chunk. If this specification is matched, embedding will not be performed."),
             dict(opt="chunk_size", type="int", default=1000, required=False, multi=False, hide=False, choice=None,
                 discription_ja="チャンクサイズを指定します。",
                 discription_en="Specifies the chunk size."),
@@ -99,6 +103,8 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
             # ベクトルストア作成
             vector_store = self.create_vectorstore(args, embeddings)
             ids = []
+            excludes = args.chunk_exclude if args.chunk_exclude is not None else []
+            excludes = [re.compile(ex) for ex in excludes]
             # ドキュメント読込み
             if args.loadprov == 'local':
                 if args.loadpath is None: raise ValueError("loadpath is required.")
@@ -114,13 +120,14 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
                     try:
                         if args.savetype == 'per_doc':
                             doc_delids = pg.select_docids(args.servicename, file)
-                        if file.suffix == '.pdf': docs = self.load_pdf(file, args, txt_splitter, md_splitter)
+                        if file.suffix == '.pdf': docs = self.load_pdf(file, args, txt_splitter, md_splitter, excludes)
                         elif file.suffix == '.docx': docs = self.load_docx(file, args, txt_splitter)
                         elif file.suffix == '.csv': docs = self.load_csv(file, args, txt_splitter)
                         elif file.suffix == '.txt': docs = self.load_txt(file, args, txt_splitter)
                         elif file.suffix == '.md': docs = self.load_md(file, args, md_splitter)
                         elif file.suffix == '.json': docs = self.load_json(file, args, txt_splitter)
                         else: raise ValueError(f"Unsupport file extension.")
+                        docs = [doc for doc in docs if all([not ex.search(doc.page_content) for ex in excludes])]
                         # ドキュメント登録（100件ずつ）
                         for i in range(0, len(docs), 100):
                             ids += vector_store.add_documents(docs[i:i+100])
@@ -152,7 +159,7 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
             return 1, ret, None
         return 0, ret, None
 
-    def load_pdf(self, file:Path, args:argparse.Namespace, splitter:TextSplitter, md_splitter:MarkdownTextSplitter) -> List[Document]:
+    def load_pdf(self, file:Path, args:argparse.Namespace, splitter:TextSplitter, md_splitter:MarkdownTextSplitter, excludes:List[re.Pattern]) -> List[Document]:
         """
         PDFファイルを読み込みます
 
@@ -160,6 +167,8 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
             file (Path): ファイル
             args (argparse.Namespace): 引数
             splitter (TextSplitter): テキスト分割オブジェクト
+            md_splitter (MarkdownTextSplitter): マークダウンテキスト分割オブジェクト
+            excludes (List[re.Pattern]): 除外パターン
 
         Returns:
             List[Document]: ドキュメントリスト
@@ -180,18 +189,19 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
                         header_md = ""
                         table_md = ""
                         for table in tables:
-                            for i, row in enumerate(table):
+                            for row in table:
                                 if row is None or type(row) is not list:
                                     continue
                                 row = [('' if r is None else r.replace('\n', ' ')) for r in row] # セル内の改行をスペースに変換
+                                if len(row) != len([r for r in row if all([not ex.search(r) for ex in excludes])]):
+                                    continue # 除外パターンにマッチするセルがある行はスキップ
                                 row_md = f'|{"|".join(row)}|\n'
                                 if with_header:
-                                    if i == 0:
+                                    if header_md == '':
                                         header_md = row_md
                                         continue
-                                    if i >= 1:
-                                        table_chunk = md_splitter.split_text(header_md+row_md)
-                                        doc_tables += [Document(t, metadata=dict(source=str(file), page=page.page_number, table=True)) for t in table_chunk]
+                                    table_chunk = md_splitter.split_text(header_md+row_md)
+                                    doc_tables += [Document(t, metadata=dict(source=str(file), page=page.page_number, table=True)) for t in table_chunk]
                                     continue
                                 table_md += row_md
                         table_chunk = md_splitter.split_text(table_md)

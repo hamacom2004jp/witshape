@@ -55,6 +55,7 @@
                      "--llmsvaccountfile","./inspectionbox-hama-4d7b588f29ab.json","--llmlocation","asia-northeast1","--llmmodel","text-multilingual-embedding-002",
                      "--loadprov","local","--loadpath","./files","--loadgrep","*","--savetype","per_service","--pdf_chunk_table","row_with_header",
                      "--chunk_size","1000","--chunk_overlap","50","--dbhost","localhost","--dbport","15432","--dbname","pgvectordb","--dbuser","pgvectordb",
+                     "--chunk_exclude","｢*｣印は、あらゆる英数字または記号","--chunk_exclude","「※１」印は、輸出令第4条または貿易外省令適用により輸出許可不要を表します",
                      "--dbpass","pgvectordb","--dbtimeout","30","--debug"],
             "module": "witshape",
             "console": "integratedTerminal",
