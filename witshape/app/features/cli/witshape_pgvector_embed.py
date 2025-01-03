@@ -121,8 +121,9 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
                         elif file.suffix == '.md': docs = self.load_md(file, args, md_splitter)
                         elif file.suffix == '.json': docs = self.load_json(file, args, txt_splitter)
                         else: raise ValueError(f"Unsupport file extension.")
-                        # ドキュメント登録
-                        ids += vector_store.add_documents(docs)
+                        # ドキュメント登録（100件ずつ）
+                        for i in range(0, len(docs), 100):
+                            ids += vector_store.add_documents(docs[i:i+100])
                         # 古いドキュメント削除
                         if args.savetype == 'per_doc':
                             vector_store.delete(ids=doc_delids, collection_only=True)
@@ -190,17 +191,9 @@ class PgvectorEmbedd(pgvector_base.PgvectorBase):
                                         continue
                                     if i >= 1:
                                         table_chunk = md_splitter.split_text(header_md+row_md)
-                                        doc_tables += [Document(t,
-                                                                metadata=dict(
-                                                                    source=str(file.absolute()),
-                                                                    page=page.page_number,
-                                                                    table=True)) for t in table_chunk]
+                                        doc_tables += [Document(t, metadata=dict(source=str(file), page=page.page_number, table=True)) for t in table_chunk]
                                     continue
                                 table_md += row_md
                         table_chunk = md_splitter.split_text(table_md)
-                        doc_tables += [Document(header_md+t,
-                                                metadata=dict(
-                                                    source=str(file.absolute()),
-                                                    page=page.page_number,
-                                                    table=True)) for t in table_chunk]
+                        doc_tables += [Document(header_md+t, metadata=dict(source=str(file), page=page.page_number, table=True)) for t in table_chunk]
         return docs + doc_tables

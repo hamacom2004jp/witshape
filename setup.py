@@ -15,7 +15,7 @@ DOWNLOAD_URL = URL
 VERSION = version.__version__
 PYTHON_REQUIRES = '>=3.10'
 INSTALL_REQUIRES = [
-    'cmdbox>=0.2.4.2',
+    'cmdbox>=0.2.4.4',
     'chardet',
     'langchain_community',
     'langchain-google-vertexai',

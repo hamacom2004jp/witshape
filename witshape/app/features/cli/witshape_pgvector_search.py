@@ -94,12 +94,12 @@ class PgvectorSearch(pgvector_base.PgvectorBase):
                 res.append(dict(id=doc.id, type=doc.type, score=score, content=doc.page_content,
                                 source=doc.metadata['source'], page=doc.metadata['page'], table=table))
             ret = dict(success=dict(docs=res))
-            logger.info(f"embedding success. dbhost={args.dbhost}, dbport={args.dbport}, dbname={args.dbname}, dbuser={args.dbuser}, " + \
+            logger.info(f"search success. dbhost={args.dbhost}, dbport={args.dbport}, dbname={args.dbname}, dbuser={args.dbuser}, " + \
                         f"servicename={args.servicename}, size={len(docs)}")
         except Exception as e:
-            logger.error(f"embedding error: {str(e)}. dbhost={args.dbhost}, dbport={args.dbport}, dbname={args.dbname}, dbuser={args.dbuser}, " + \
+            logger.error(f"search error: {str(e)}. dbhost={args.dbhost}, dbport={args.dbport}, dbname={args.dbname}, dbuser={args.dbuser}, " + \
                          f"servicename={args.servicename}")
-            ret = dict(error=f"embedding error: {str(e)} dbhost={args.dbhost}, dbport={args.dbport}, dbname={args.dbname}, dbuser={args.dbuser}, " + \
+            ret = dict(error=f"search error: {str(e)} dbhost={args.dbhost}, dbport={args.dbport}, dbname={args.dbname}, dbuser={args.dbuser}, " + \
                              f"servicename={args.servicename}")
         common.print_format(ret, args.format, tm, args.output_json, args.output_json_append, pf=pf)
         if 'success' not in ret:
